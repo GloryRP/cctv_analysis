@@ -1,8 +1,15 @@
 Flask==2.3.3
 Flask-CORS==4.0.0
 Werkzeug==2.3.7
-numpy==1.24.3
-opencv-python==4.8.1.78
+
+# Stable versions that always install cleanly on Render (Python 3.11)
+numpy==1.23.5
+opencv-python-headless==4.8.0.74
+
 Pillow==10.0.0
-setuptools>=65
+
+ultralytics==8.0.196
+
+# DO NOT force setuptools version
+setuptools
 wheel
