@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a73e8">
+    
+    <title>AI Security Analytics Dashboard</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SecureAI</span>
+            </div>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#cameras" class="nav-link" data-section="cameras">
+                    <i class="fas fa-video"></i>
+                    <span>Cameras</span>
+                </a>
+                <a href="#alerts" class="nav-link" data-section="alerts">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                    <span class="badge" id="alertBadge">0</span>
+                </a>
+                <a href="#reports" class="nav-link" data-section="reports">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="icon-btn" id="voiceBtn" title="Voice Commands">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Security Overview</h1>
+                    <div class="date-display" id="currentDate"></div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeCameras">0</h3>
+                            <p>Active Cameras</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="normalEvents">0</h3>
+                            <p>Normal Events</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="anomaliesDetected">0</h3>
+                            <p>Anomalies Today</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="peopleDetected">0</h3>
+                            <p>People Detected</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h3>Activity Timeline (24 Hours)</h3>
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Event Distribution</h3>
+                        <canvas id="eventChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Alerts -->
+                <div class="recent-alerts-card">
+                    <div class="card-header">
+                        <h3>Recent Anomalies</h3>
+                        <button class="btn-secondary" id="viewAllAlerts">View All</button>
+                    </div>
+                    <div class="alerts-list" id="recentAlertsList">
+                        <div class="loading-state">Loading alerts...</div>
+                    </div>
+                </div>
+
+                <!-- Activity Heatmap -->
+                <div class="heatmap-card">
+                    <h3>Activity Heatmap - Main Entrance</h3>
+                    <div class="heatmap-container" id="heatmapContainer">
+                        <img src="https://via.placeholder.com/800x450/2a2a2a/666?text=Loading+Camera+Feed" alt="Heatmap" class="heatmap-image">
+                        <canvas id="heatmapCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cameras Section -->
+        <section id="cameras" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Live Camera Feeds</h1>
+                    <button class="btn-primary" id="uploadVideoBtn">
+                        <i class="fas fa-upload"></i> Upload Video
+                    </button>
+                </div>
+
+                <div class="camera-grid" id="cameraGrid">
+                    <div class="loading-state">Loading cameras...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Section -->
+        <section id="alerts" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Security Alerts</h1>
+                    <div class="filter-group">
+                        <select id="alertFilter" class="filter-select">
+                            <option value="all">All Alerts</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="alerts-timeline" id="alertsTimeline">
+                    <div class="loading-state">Loading alerts...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Security Reports</h1>
+                    <button class="btn-primary" id="generateReportBtn">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                </div>
+
+                <div class="report-generator-card">
+                    <h3>Generate Custom Report</h3>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label for="reportDate">Date Range</label>
+                            <input type="date" id="reportStartDate" class="form-input">
+                            <input type="date" id="reportEndDate" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reportType">Report Type</label>
+                            <select id="reportType" class="form-input">
+                                <option value="daily">Daily Summary</option>
+                                <option value="weekly">Weekly Summary</option>
+                                <option value="detailed">Detailed Analysis</option>
+                                <option value="incidents">Incident Report</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn-primary full-width" id="downloadReportBtn">
+                            <i class="fas fa-download"></i> Download PDF Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="reports-list" id="reportsList">
+                    <div class="loading-state">Loading reports...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Video for Analysis</h2>
+                <button class="modal-close" id="closeUploadModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop video file here or click to browse</p>
+                    <input type="file" id="videoFileInput" accept="video/*" hidden>
+                    <button class="btn-secondary" id="browseBtn">Browse Files</button>
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="uploadStatus">Uploading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Sound -->
+    <audio id="alertSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRhYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQIAAAA=" type="audio/wav">
+    </audio>
+
+    <!-- Voice Status Indicator -->
+    <div class="voice-indicator" id="voiceIndicator">
+        <div class="voice-pulse"></div>
+        <span>Listening...</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/voice-commands.js"></script>
+</body>
+</html>
