@@ -2,14 +2,17 @@ Flask==2.3.3
 Flask-CORS==4.0.0
 Werkzeug==2.3.7
 
-# Stable versions that always install cleanly on Render (Python 3.11)
-numpy==1.23.5
-opencv-python-headless==4.8.0.74
+# NumPy - must use a wheel-supported version on Render
+numpy==1.26.4
+
+# Use headless OpenCV (smaller, no GUI dependencies)
+opencv-python-headless==4.8.1.78
 
 Pillow==10.0.0
 
-ultralytics==8.0.196
+# ReportLab for PDF generation
+reportlab==3.6.12
 
-# DO NOT force setuptools version
-setuptools
+# For Python build backend
+setuptools>=65
 wheel
